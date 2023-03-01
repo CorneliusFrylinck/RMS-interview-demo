@@ -1,0 +1,15 @@
+﻿query GetSites {
+  sites {
+    id
+    name
+    towerStatusType {
+      id
+      name
+    }
+    client {
+      id
+      name
+    }
+   
+  }
+}

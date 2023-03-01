@@ -1,0 +1,86 @@
+﻿schema {
+  query: Query
+}
+
+enum ApplyPolicy {
+  BEFORE_RESOLVER
+  AFTER_RESOLVER
+  VALIDATION
+}
+
+type Query {
+  clients: [Client!]!
+  sites: [Site!]!
+  clientById(id: UUID!): Client
+  consumerById(id: UUID!): Consumer
+  contractorById(id: UUID!): Contractor
+  siteById(id: UUID!): Site
+}
+
+type SiteClient {
+  id: UUID
+  name: String
+}
+
+type Consumer {
+  name: String!
+  id: UUID!
+}
+
+type PhysicalAddress {
+  copy: PhysicalAddress!
+  toLine1: String!
+  toLine2: String!
+  unitNo: String!
+  streetNo: String!
+  streetName: String!
+  suburb: String!
+  state: String!
+  code: String!
+  country: String!
+  lat: Float!
+  lng: Float!
+}
+
+type TowerStatusType {
+  id: Int!
+  name: String!
+}
+
+scalar UUID
+
+type Contractor {
+  name: String!
+  id: UUID!
+}
+
+type Site {
+  name: String!
+  physicalAddress: PhysicalAddress!
+  towerStatusType: TowerStatusType!
+  id: UUID!
+  client: SiteClient!
+  consumers: [Consumer!]!
+}
+
+type Location {
+  occupations: [Occupation!]!
+  name: String!
+  tower: Site!
+  id: UUID!
+  linkedUsers: [UUID!]!
+}
+
+type Client {
+  name: String!
+  sites: [Site!]!
+  contractors: [Contractor!]!
+  id: UUID!
+}
+
+type Occupation {
+  consumer: Consumer!
+  location: Location!
+  id: UUID!
+  linkedUsers: [UUID!]!
+}

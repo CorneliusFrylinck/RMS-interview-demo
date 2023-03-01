@@ -1,0 +1,36 @@
+﻿@page "/claims"
+@inject AuthenticationStateProvider provider
+
+<PageTitle>Claims</PageTitle>
+
+
+
+@foreach (var c in claims)
+{
+    <MudText>@c </MudText>
+    <br/>
+}
+
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private List<string> claims = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var d = await provider.GetAuthenticationStateAsync();
+        foreach (var c in d.User.Claims)
+        {
+            claims.Add($"{c.Type} => {c.Value}");
+        }
+
+    }
+
+
+}
