@@ -1,11 +1,11 @@
 ﻿@page "/fetchdata"
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using CanidateApp.Shared
-@attribute [Authorize]
-@inject HttpClient Http
-
+@using Microsoft.AspNetCore.Authorization
 @inject IHttpClientFactory factory
+@using CanidateApp.Shared
+@inject HttpClient Http
+@attribute [Authorize]
+
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -42,8 +42,6 @@ else
     </table>
 }
 
-
-
 @if (forecasts2 == null)
 {
     <p><em>Loading...</em></p>
@@ -72,7 +70,6 @@ else
         </tbody>
     </table>
 
-
     <UseGetSites Strategy="ExecutionStrategy.CacheAndNetwork" Context="result">
         <ChildContent>
             @foreach (var s in result.Sites)
@@ -81,8 +78,6 @@ else
             }
         </ChildContent>
     </UseGetSites>
-
-
 }
 
 
@@ -92,16 +87,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
-        var c = factory.CreateClient("WebApi");
-
-        var d = await c.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
-
-        forecasts2 = d;
-
         try
         {
+            var c = factory.CreateClient("WebApi");
+
             forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+            forecasts2 = await c.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
         }
         catch (AccessTokenNotAvailableException exception)
         {

@@ -1,6 +1,6 @@
 ﻿@page "/sites"
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.AspNetCore.Authorization
 @using CanidateApp.Shared
 @attribute [Authorize]
 
@@ -13,16 +13,13 @@
                 <MudTh>Site Name</MudTh>
                 <MudTh>Client</MudTh>
                 <MudTh>Status</MudTh>
-               
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Id">@context.Id</MudTd>
                 <MudTd DataLabel="Site Name">@context.Name</MudTd>
                 <MudTd DataLabel="Client">@context.Client.Name</MudTd>
                 <MudTd DataLabel="Status" >@context.TowerStatusType.Name</MudTd>
-              
             </RowTemplate>
-            
             <PagerContent>
                 <MudTablePager />
             </PagerContent>
@@ -33,5 +30,3 @@
 @code {
     
 }
-
-

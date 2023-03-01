@@ -9,7 +9,7 @@ namespace CanidateApp.Client;
 public class CustomUserAccount : RemoteUserAccount
 {
     [JsonPropertyName("amr")]
-    public string[] AuthenticationMethod { get; set; }
+    public string[] AuthenticationMethod { get; set; } = null!;
 }
 
 public class CustomAccountFactory
@@ -29,10 +29,8 @@ public class CustomAccountFactory
         {
             var dds = initialUser.Claims.ToList().Select(c => c.Type).ToList();
 
-
             ((ClaimsIdentity)initialUser.Identity)
                 .AddClaim(new Claim(ClaimTypes.Role, "User"));
-
 
             var dd = initialUser.Claims.Where(c => c.Type.Contains("extension_UserRoles")).Select(c => c.Value).ToList();
 
@@ -47,40 +45,7 @@ public class CustomAccountFactory
                         .AddClaim(new Claim(ClaimTypes.Role, s));
                 }
             }
-
-
         }
-
-
-        var ss = 0;
-
-
-
-        //     try
-        //     {
-
-
-
-
-
-        //if (initialUser.Identity.IsAuthenticated)
-        //     {
-        //         foreach (var value in account.AuthenticationMethod)
-        //         {
-        //             ((ClaimsIdentity)initialUser.Identity)
-        //                 .AddClaim(new Claim("amr", value));
-        //         }
-        //     }
-
-        //     }
-        //     catch (Exception e)
-        //     {
-
-        //     }
-
-
-
-
 
         return initialUser;
     }
