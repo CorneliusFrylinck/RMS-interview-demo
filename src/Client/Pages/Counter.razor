@@ -3,12 +3,19 @@
 
 
 <PageTitle>Claims</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        @foreach (var c in claims)
+        {
+            <MudText>@c </MudText>
+            <br />
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div>You are not authorized to view this page.</div>
+    </NotAuthorized>
+</AuthorizeView>
 
-@foreach (var c in claims)
-{
-    <MudText>@c </MudText>
-    <br/>
-}
 
 
 @code {
