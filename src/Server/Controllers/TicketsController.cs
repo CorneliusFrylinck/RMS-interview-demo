@@ -1,6 +1,7 @@
 ﻿using CanidateApp.Server.Infrastructure.Interfaces;
 using CanidateApp.Server.Persistence;
 using CanidateApp.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,13 +29,23 @@ namespace CanidateApp.Server.Controllers
         }
 
         [HttpPost("createTicket")]
-        public async Task<ActionResult> CreateTicket([FromBody] TicketDto ticketDto)
+        public async Task<ActionResult> CreateTicketAsynx([FromBody] TicketDto ticketDto)
         {
             var result = await _ticketRepository.CreateTicket(ticketDto.SiteId, ticketDto.ReasonId, ticketDto.Details);
 
             if (!result) return BadRequest("We were unable to create your ticket.");
 
             return Ok();
+        }
+
+        [HttpGet("reasons")]
+        public async Task<ActionResult<IEnumerable<Ticket>>> GetTicketReasonsAsync()
+        {
+            var result = await _ticketRepository.GetTicketReasons();
+
+            if (result == null) return BadRequest("We had a problem getting ticket reasons from the database.");
+
+            return Ok(result);
         }
     }
 }

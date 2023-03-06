@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CanidateApp.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230305171629_AddedTicketData")]
-    partial class AddedTicketData
+    [Migration("20230306203831_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,6 +34,9 @@ namespace CanidateApp.Server.Migrations
 
                     b.Property<Guid>("SiteId")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("TicketCreatedAt")
                         .HasColumnType("TEXT");

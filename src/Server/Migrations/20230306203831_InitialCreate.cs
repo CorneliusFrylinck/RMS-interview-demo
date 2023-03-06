@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CanidateApp.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedTicketData : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,6 +35,7 @@ namespace CanidateApp.Server.Migrations
                     SiteId = table.Column<Guid>(type: "TEXT", nullable: false),
                     ReasonId = table.Column<int>(type: "INTEGER", nullable: false),
                     Details = table.Column<string>(type: "TEXT", nullable: true),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
                     TicketCreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     TicketResolvedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },

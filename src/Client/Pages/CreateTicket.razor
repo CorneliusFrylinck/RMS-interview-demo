@@ -1,0 +1,43 @@
+﻿@page "/createTicket"
+@using CanidateApp.Shared
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+
+
+<PageTitle>Create Ticket</PageTitle>
+
+<h3>CreateTicket</h3>
+
+@if (ticketReasons == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <select @onchange="(e) => ticket.ReasonId = Convert.ToInt32(e.Value)">
+            @for (int i = 0; i < ticketReasons.Count(); i++)
+            {
+                <option value="@i">@ticketReasons[i].Title</option>
+            }
+        </select>
+
+        <button @onclick="() => PostTicket()" type="submit">Submit</button>
+    </div>
+}
+
+
+@code {
+    private TicketDto ticket = new TicketDto();
+    private List<TicketReason>? ticketReasons;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ticketReasons = await Http.GetFromJsonAsync<List<TicketReason>>("api/tickets/reasons");
+    }
+
+    private async Task PostTicket()
+    {
+        var result = await Http.PostAsJsonAsync<TicketDto>("api/tickets/createTicket", ticket);
+    }
+}

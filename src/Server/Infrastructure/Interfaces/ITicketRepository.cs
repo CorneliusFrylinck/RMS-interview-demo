@@ -16,6 +16,12 @@ namespace CanidateApp.Server.Infrastructure.Interfaces
         Task<IEnumerable<Ticket>?> GetOpenTicketsBySiteId(Guid siteId);
 
         /// <summary>
+        /// Retrieve a list of ticket reasons.
+        /// </summary>
+        /// <returns>A list of ticket reasons.</returns>
+        Task<IEnumerable<TicketReason>?> GetTicketReasons();
+
+        /// <summary>
         /// Create a new ticket.
         /// </summary>
         /// <param name="siteId">Site the ticket is in relation to.</param>

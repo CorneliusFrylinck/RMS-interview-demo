@@ -32,6 +32,9 @@ namespace CanidateApp.Server.Migrations
                     b.Property<Guid>("SiteId")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("TicketCreatedAt")
                         .HasColumnType("TEXT");
 

@@ -22,5 +22,10 @@ namespace CanidateApp.Shared
         /// Details regarding the issue when the reason is not found in the list.
         /// </summary>
         public string? Details { get; set; }
+
+        /// <summary>
+        /// The current status of the ticket.
+        /// </summary>
+        public TicketStatusEnum Status { get; set; } = TicketStatusEnum.Unassigned;
     }
 }

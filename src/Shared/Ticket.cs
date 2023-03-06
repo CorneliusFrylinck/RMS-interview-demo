@@ -29,6 +29,11 @@ namespace CanidateApp.Shared
         public string? Details { get; set; }
 
         /// <summary>
+        /// The current status of the ticket.
+        /// </summary>
+        public TicketStatusEnum Status { get; set; } = TicketStatusEnum.Unassigned;
+
+        /// <summary>
         /// The date the ticket was created.
         /// </summary>
         public DateTime TicketCreatedAt { get; set; } = DateTime.UtcNow;

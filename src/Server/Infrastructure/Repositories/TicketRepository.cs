@@ -1,4 +1,5 @@
-﻿using CanidateApp.Server.Infrastructure.Interfaces;
+﻿using CanidateApp.Client.Pages;
+using CanidateApp.Server.Infrastructure.Interfaces;
 using CanidateApp.Server.Persistence;
 using CanidateApp.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,19 @@ namespace CanidateApp.Server.Infrastructure.Repositories
             catch
             {
                 return false;
+            }
+        }
+
+        public async Task<IEnumerable<TicketReason>?> GetTicketReasons()
+        {
+            try
+            {
+                var result = await _dataContext.TicketReasons.ToListAsync();
+                return result;
+            }
+            catch
+            {
+                return null;
             }
         }
     }
