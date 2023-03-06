@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CanidateApp.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230305141059_AddedTicketTables")]
-    partial class AddedTicketTables
+    [Migration("20230305171629_AddedTicketData")]
+    partial class AddedTicketData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,7 +27,6 @@ namespace CanidateApp.Server.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Details")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ReasonId")
@@ -62,6 +61,38 @@ namespace CanidateApp.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TicketReasons");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Title = "Tower connection is failing"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Title = "Tower has trouble lasting through 4-hour loadshedding"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Title = "Tower has trouble lasting through 2-hour loadshedding"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Title = "Tower connection is slow"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Title = "Tower connection is unstable"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Title = "Other"
+                        });
                 });
 
             modelBuilder.Entity("CanidateApp.Shared.Ticket", b =>

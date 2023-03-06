@@ -24,7 +24,6 @@ namespace CanidateApp.Server.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Details")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ReasonId")
@@ -64,27 +63,32 @@ namespace CanidateApp.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Title = "Tower connection is failing."
+                            Title = "Tower connection is failing"
                         },
                         new
                         {
                             Id = 2,
-                            Title = "Tower has trouble lasting through 4-hour loadshedding."
+                            Title = "Tower has trouble lasting through 4-hour loadshedding"
                         },
                         new
                         {
                             Id = 3,
-                            Title = "Tower has trouble lasting through 2-hour loadshedding."
+                            Title = "Tower has trouble lasting through 2-hour loadshedding"
                         },
                         new
                         {
                             Id = 4,
-                            Title = "Tower connection is slow."
+                            Title = "Tower connection is slow"
                         },
                         new
                         {
                             Id = 5,
-                            Title = "Tower connection is unstable."
+                            Title = "Tower connection is unstable"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Title = "Other"
                         });
                 });
 

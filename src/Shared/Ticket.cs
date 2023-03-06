@@ -26,12 +26,12 @@ namespace CanidateApp.Shared
         /// <summary>
         /// Details regarding the issue when the reason is not found in the list.
         /// </summary>
-        public string Details { get; set; } = null!;
+        public string? Details { get; set; }
 
         /// <summary>
         /// The date the ticket was created.
         /// </summary>
-        public DateTime TicketCreatedAt { get; set; }
+        public DateTime TicketCreatedAt { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// The date the ticket was created.

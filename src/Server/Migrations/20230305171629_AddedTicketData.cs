@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace CanidateApp.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedTicketTables : Migration
+    public partial class AddedTicketData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,7 +34,7 @@ namespace CanidateApp.Server.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     SiteId = table.Column<Guid>(type: "TEXT", nullable: false),
                     ReasonId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Details = table.Column<string>(type: "TEXT", nullable: false),
+                    Details = table.Column<string>(type: "TEXT", nullable: true),
                     TicketCreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     TicketResolvedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
@@ -45,6 +47,19 @@ namespace CanidateApp.Server.Migrations
                         principalTable: "TicketReasons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "TicketReasons",
+                columns: new[] { "Id", "Title" },
+                values: new object[,]
+                {
+                    { 1, "Tower connection is failing" },
+                    { 2, "Tower has trouble lasting through 4-hour loadshedding" },
+                    { 3, "Tower has trouble lasting through 2-hour loadshedding" },
+                    { 4, "Tower connection is slow" },
+                    { 5, "Tower connection is unstable" },
+                    { 6, "Other" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -1,3 +1,5 @@
+using CanidateApp.Server.Infrastructure.Interfaces;
+using CanidateApp.Server.Infrastructure.Repositories;
 using CanidateApp.Server.Persistence;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,6 +15,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddCors();
+builder.Services.AddTransient<ITicketRepository, TicketRepository>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlite(builder.Configuration["ConnectionStrings:DevelopmentConnectionString"]);
@@ -31,6 +35,11 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseCors(opt =>
+{
+    opt.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+});
 
 app.UseHttpsRedirection();
 

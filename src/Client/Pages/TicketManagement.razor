@@ -1,0 +1,112 @@
+﻿@page "/ticketManagement"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using CanidateApp.Shared
+@inject HttpClient Http
+@inject AuthenticationStateProvider provider
+@attribute [Authorize]
+
+
+<PageTitle>Ticket Management</PageTitle>
+
+<h1>Ticket Management</h1>
+
+@if (tickets == null || roles == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (roles.Contains("client"))
+{
+    
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Site Id Client</th>
+            <th>Reason</th>
+            <th>Details</th>
+            <th>Created on</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var ticket in tickets)
+        {
+            <tr>
+                <td>@ticket.SiteId</td>
+                <td>@ticket.Reason</td>
+                @if (@ticket.Details != null)
+                {
+                    <td>@ticket.Details</td>
+                }else
+                {
+                    <td>No further details provided</td>
+                }
+                <td>@ticket.TicketCreatedAt.ToString()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else if (roles.Contains("consumer"))
+{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Site Id Consumer</th>
+                <th>Reason</th>
+                <th>Details</th>
+                <th>Created on</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ticket in tickets)
+            {
+                <tr>
+                    <td>@ticket.SiteId</td>
+                    <td>@ticket.Reason</td>
+                    @if (@ticket.Details != null)
+                    {
+                        <td>@ticket.Details</td>
+                    }
+                    else
+                    {
+                        <td>No further details provided</td>
+                    }
+                    <td>@ticket.TicketCreatedAt.ToString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private Ticket[]? tickets;
+
+
+    private string roles = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var claims = await provider.GetAuthenticationStateAsync();
+            foreach (var claim in claims.User.Claims)
+            {
+                if (claim.Type == "extension_UserRoles")
+                {
+                    roles = claim.Value.ToLower();
+                }
+            }
+            tickets = await Http.GetFromJsonAsync<Ticket[]>("api/tickets/bySiteId");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        catch (Exception ee)
+        {
+
+        }
+    }
+}
