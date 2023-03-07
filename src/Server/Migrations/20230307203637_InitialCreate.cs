@@ -19,6 +19,7 @@ namespace CanidateApp.Server.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Reason = table.Column<int>(type: "INTEGER", nullable: false),
                     Title = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -52,15 +53,15 @@ namespace CanidateApp.Server.Migrations
 
             migrationBuilder.InsertData(
                 table: "TicketReasons",
-                columns: new[] { "Id", "Title" },
+                columns: new[] { "Id", "Reason", "Title" },
                 values: new object[,]
                 {
-                    { 1, "Tower connection is failing" },
-                    { 2, "Tower has trouble lasting through 4-hour loadshedding" },
-                    { 3, "Tower has trouble lasting through 2-hour loadshedding" },
-                    { 4, "Tower connection is slow" },
-                    { 5, "Tower connection is unstable" },
-                    { 6, "Other" }
+                    { 1, 0, "Tower connection is failing" },
+                    { 2, 1, "Tower has trouble lasting through 4-hour loadshedding" },
+                    { 3, 2, "Tower has trouble lasting through 2-hour loadshedding" },
+                    { 4, 3, "Tower connection is slow" },
+                    { 5, 4, "Tower connection is unstable" },
+                    { 6, 5, "Other" }
                 });
 
             migrationBuilder.CreateIndex(

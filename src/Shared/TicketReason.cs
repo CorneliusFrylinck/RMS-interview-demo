@@ -11,9 +11,10 @@ namespace CanidateApp.Shared
     /// </summary>
     public class TicketReason
     {
-        public TicketReason(int id, string title)
+        public TicketReason(int id, TicketReasonEnum reason, string title)
         {
             Id = id;
+            Reason = reason;
             Title = title;
         }
 
@@ -21,6 +22,11 @@ namespace CanidateApp.Shared
         /// The unique identifier for the ticket reason.
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// An enum used to verify that the ticket reason is.
+        /// </summary>
+        public TicketReasonEnum Reason { get; set; }
 
         /// <summary>
         /// The reason title. This is what the user sees in the list.

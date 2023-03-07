@@ -1,7 +1,10 @@
 ﻿@page "/createTicket"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.AspNetCore.Authorization
 @using CanidateApp.Shared
 @using Microsoft.AspNetCore.Components.Forms
 @inject HttpClient Http
+@attribute [Authorize]
 
 
 <PageTitle>Create Ticket</PageTitle>
@@ -14,15 +17,38 @@
 }
 else
 {
-    <div>
+    <div class="create-form">
+        <select @onchange="(e) => ticket.SiteId = new Guid(e.Value!.ToString()!)">
+            <option value="">- Please select an option from the list</option>
+            <UseGetSites Strategy="ExecutionStrategy.CacheAndNetwork" Context="result">
+                <ChildContent>
+                    @foreach (var s in result.Sites)
+                    {
+                        <option value="@s.Id">@($"{s.Name}")</option>
+                    }
+                </ChildContent>
+            </UseGetSites>
+        </select>
         <select @onchange="(e) => ticket.ReasonId = Convert.ToInt32(e.Value)">
+            <option value="0">- Please select an option from the list</option>
             @for (int i = 0; i < ticketReasons.Count(); i++)
             {
-                <option value="@i">@ticketReasons[i].Title</option>
+                <option value="@((int)ticketReasons[i].Reason)">@ticketReasons[i].Title</option>
             }
         </select>
 
-        <button @onclick="() => PostTicket()" type="submit">Submit</button>
+        @if (ticket.ReasonId == (int)TicketReasonEnum.Other)
+        {
+            <textarea class="details-area" onchange="(e) => ticket.Details = e.Value" />
+        }
+        <MudList Class="text-danger">
+            @foreach (var err in errors)
+            {
+                <MudListItem>@err</MudListItem>
+            }
+        </MudList>
+
+        <button disabled="@submitting" class="btn btn-primary" @onclick="() => PostTicket()" type="submit">Submit</button>
     </div>
 }
 
@@ -30,6 +56,8 @@ else
 @code {
     private TicketDto ticket = new TicketDto();
     private List<TicketReason>? ticketReasons;
+    private List<string>? errors = new List<string>();
+    private bool submitting = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,6 +66,60 @@ else
 
     private async Task PostTicket()
     {
+        submitting = true;
+        errors = new List<string>();
+        if (ticket.SiteId == Guid.Empty)
+        {
+            errors.Add("Please select a site.");
+        }
+        if (ticket.ReasonId == 0)
+        {
+            errors.Add("Please select a reason for your issue.");
+        }
+        else if (ticket.ReasonId == (int)TicketReasonEnum.Other && string.IsNullOrWhiteSpace(ticket.Details))
+        {
+            errors.Add("Please specify your issue in the text area.");
+        }
+
+        if (errors.Any())
+        {
+            submitting = false;
+            return;
+        }
+
         var result = await Http.PostAsJsonAsync<TicketDto>("api/tickets/createTicket", ticket);
+        submitting = false;
     }
 }
+
+<style>
+    .create-form {
+        display: flex;
+        flex-direction: column;
+        margin: 0 2rem;
+    }
+
+    .details-area {
+        border-radius: 8px;
+        box-shadow: 1px 1px 2px rgba(50, 50, 50, 0.3), -1px -1px 2px rgba(50, 50, 50, 0.3);
+        margin: 1rem 0;
+        padding: 0.3rem 0.5rem;
+    }
+
+    .btn {
+        margin: 1rem 0;
+        margin-right: auto;
+    }
+
+    select {
+        margin-top: 1rem;
+        border-radius: 8px;
+        background-color: transparent;
+        box-shadow: 1px 1px 1px rgba(50, 50, 50, 0.3), -1px -1px 1px rgba(50, 50, 50, 0.3);
+        padding-left: 0.6rem;
+    }
+
+    option {
+        padding: 0.3rem;
+    }
+</style>

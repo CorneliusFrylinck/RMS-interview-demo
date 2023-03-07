@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CanidateApp.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230306203831_InitialCreate")]
+    [Migration("20230307203637_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -57,6 +57,9 @@ namespace CanidateApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Reason")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -69,31 +72,37 @@ namespace CanidateApp.Server.Migrations
                         new
                         {
                             Id = 1,
+                            Reason = 0,
                             Title = "Tower connection is failing"
                         },
                         new
                         {
                             Id = 2,
+                            Reason = 1,
                             Title = "Tower has trouble lasting through 4-hour loadshedding"
                         },
                         new
                         {
                             Id = 3,
+                            Reason = 2,
                             Title = "Tower has trouble lasting through 2-hour loadshedding"
                         },
                         new
                         {
                             Id = 4,
+                            Reason = 3,
                             Title = "Tower connection is slow"
                         },
                         new
                         {
                             Id = 5,
+                            Reason = 4,
                             Title = "Tower connection is unstable"
                         },
                         new
                         {
                             Id = 6,
+                            Reason = 5,
                             Title = "Other"
                         });
                 });
