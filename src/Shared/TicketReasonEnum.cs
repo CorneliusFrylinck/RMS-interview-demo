@@ -9,11 +9,11 @@ namespace CanidateApp.Shared
 {
     public enum TicketReasonEnum
     {
-        Fail,
-        Battery_Capacity,
-        Battery_Quality,
-        Slow_Connection,
-        Unstable_Connection,
-        Other
+        Fail = 1,
+        Battery_Capacity = 2,
+        Battery_Quality = 3,
+        Slow_Connection = 4,
+        Unstable_Connection = 5,
+        Other = 6
     }
 }
