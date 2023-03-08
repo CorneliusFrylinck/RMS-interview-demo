@@ -32,7 +32,7 @@ else if (roles.Contains("client"))
         {
             <tr>
                 <td>@ticket.SiteId</td>
-                <td>@ticket.Reason</td>
+                <td>@Enum.GetName(typeof(TicketReasonEnum), ticket.Reason.Id)</td>
                 @if (@ticket.Details != null)
                 {
                     <td>@ticket.Details</td>
@@ -98,7 +98,7 @@ else if (roles.Contains("consumer"))
                     roles = claim.Value.ToLower();
                 }
             }
-            tickets = await Http.GetFromJsonAsync<Ticket[]>("api/tickets/bySiteId");
+            tickets = await Http.GetFromJsonAsync<Ticket[]>("api/tickets/getTickets");
         }
         catch (AccessTokenNotAvailableException exception)
         {

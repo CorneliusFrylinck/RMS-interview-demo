@@ -9,6 +9,12 @@ namespace CanidateApp.Server.Infrastructure.Interfaces
     public interface ITicketRepository
     {
         /// <summary>
+        /// Find all open/unresolved tickets.
+        /// </summary>
+        /// <returns>A list of open tickets.</returns>
+        Task<IEnumerable<Ticket>?> GetOpenTickets();
+
+        /// <summary>
         /// Find all open/unresolved tickets related to a specific site.
         /// </summary>
         /// <param name="siteId">The site in question.</param>

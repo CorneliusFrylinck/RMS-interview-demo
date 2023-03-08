@@ -16,6 +16,19 @@ namespace CanidateApp.Server.Infrastructure.Repositories
             _dataContext = dataContext;
         }
 
+        public async Task<IEnumerable<Ticket>?> GetOpenTickets()
+        {
+            try
+            {
+                var result = await _dataContext.Tickets.Where(t => t.TicketResolvedAt == null).ToListAsync();
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<IEnumerable<Ticket>?> GetOpenTicketsBySiteId(Guid siteId)
         {
             try

@@ -18,7 +18,17 @@ namespace CanidateApp.Server.Controllers
             _ticketRepository = ticketRepository;
         }
 
-        [HttpGet("bySiteId")]
+        [HttpGet("getTickets")]
+        public async Task<ActionResult<IEnumerable<Ticket>>> GetTicketsBySiteIdAsync()
+        {
+            var result = await _ticketRepository.GetOpenTickets();
+
+            if (result == null) return BadRequest("We had a problem getting tickets.");
+
+            return Ok(result);
+        }
+
+        [HttpGet("getTicketsBySiteId")]
         public async Task<ActionResult<IEnumerable<Ticket>>> GetTicketsBySiteIdAsync(Guid siteId)
         {
             var result = await _ticketRepository.GetOpenTicketsBySiteId(siteId);

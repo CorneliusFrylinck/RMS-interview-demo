@@ -4,6 +4,7 @@
 @using CanidateApp.Shared
 @using Microsoft.AspNetCore.Components.Forms
 @inject HttpClient Http
+@inject NavigationManager navManager
 @attribute [Authorize]
 
 
@@ -18,8 +19,8 @@
 else
 {
     <div class="create-form">
-        <select @onchange="(e) => ticket.SiteId = new Guid(e.Value!.ToString()!)">
-            <option value="">- Please select an option from the list</option>
+        <select @bind="ticket.SiteId">
+            <option value="@Guid.Empty">- Please select an option from the list</option>
             <UseGetSites Strategy="ExecutionStrategy.CacheAndNetwork" Context="result">
                 <ChildContent>
                     @foreach (var s in result.Sites)
@@ -29,7 +30,7 @@ else
                 </ChildContent>
             </UseGetSites>
         </select>
-        <select @onchange="(e) => ticket.ReasonId = Convert.ToInt32(e.Value)">
+        <select @bind="ticket.ReasonId">
             <option value="0">- Please select an option from the list</option>
             @for (int i = 0; i < ticketReasons.Count(); i++)
             {
@@ -39,10 +40,10 @@ else
 
         @if (ticket.ReasonId == (int)TicketReasonEnum.Other)
         {
-            <textarea class="details-area" onchange="(e) => ticket.Details = e.Value" />
+            <textarea class="details-area" @bind="ticket.Details" />
         }
         <MudList Class="text-danger">
-            @foreach (var err in errors)
+            @foreach (var err in errors!)
             {
                 <MudListItem>@err</MudListItem>
             }
@@ -66,28 +67,58 @@ else
 
     private async Task PostTicket()
     {
+        // Set submission to stop the user from submitting multiple times at once.
         submitting = true;
+
+        // Clear the error list
         errors = new List<string>();
+
+        // If the ticket site has not been set, display an error.
         if (ticket.SiteId == Guid.Empty)
         {
             errors.Add("Please select a site.");
         }
+
+        // If Other was not selected, the ticket does not need additional detail.
+        if (ticket.ReasonId != (int)TicketReasonEnum.Other)
+        {
+            ticket.Details = null;
+        }
+
+        // If the ticket reason has not been set, display an error.
         if (ticket.ReasonId == 0)
         {
             errors.Add("Please select a reason for your issue.");
-        }
+        }// If Other was selected, the ticket does needs additional detail, display an error if it wasn't set.
         else if (ticket.ReasonId == (int)TicketReasonEnum.Other && string.IsNullOrWhiteSpace(ticket.Details))
         {
             errors.Add("Please specify your issue in the text area.");
         }
 
+        // If any errors were found, reset submission and return.
         if (errors.Any())
         {
             submitting = false;
             return;
         }
 
-        var result = await Http.PostAsJsonAsync<TicketDto>("api/tickets/createTicket", ticket);
+        // Create the ticket.
+        var result = await Http.PostAsJsonAsync<TicketDto>($"{navManager.BaseUri}api/tickets/createTicket", ticket);
+
+        // If the post was unsuccessful, notify the user, reset submission and return.
+        if (!result.IsSuccessStatusCode)
+        {
+            errors.Add("Please specify your issue in the text area.");
+            submitting = false;
+            return;
+        }
+
+        // If the post was successful, clear all fields.
+        ticket.SiteId = Guid.Empty;
+        ticket.ReasonId = 0;
+        ticket.Details = null;
+
+        // Reset submission.
         submitting = false;
     }
 }
@@ -101,7 +132,7 @@ else
 
     .details-area {
         border-radius: 8px;
-        box-shadow: 1px 1px 2px rgba(50, 50, 50, 0.3), -1px -1px 2px rgba(50, 50, 50, 0.3);
+        box-shadow: 1px 1px 2px rgba(50, 50, 50, 0.3), -1px -1px 2px rgba(50, 50, 50, 0.4);
         margin: 1rem 0;
         padding: 0.3rem 0.5rem;
     }
