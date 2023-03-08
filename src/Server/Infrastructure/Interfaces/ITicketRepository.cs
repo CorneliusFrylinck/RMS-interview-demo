@@ -22,6 +22,12 @@ namespace CanidateApp.Server.Infrastructure.Interfaces
         Task<IEnumerable<Ticket>?> GetOpenTicketsBySiteId(Guid siteId);
 
         /// <summary>
+        /// Find all open/unresolved tickets for a specific constractor.
+        /// </summary>
+        /// <returns>A list of open tickets.</returns>
+        Task<IEnumerable<Ticket>?> GetOpenTicketsByContractor(string contractor);
+
+        /// <summary>
         /// Retrieve a list of ticket reasons.
         /// </summary>
         /// <returns>A list of ticket reasons.</returns>

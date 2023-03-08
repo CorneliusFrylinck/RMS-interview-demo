@@ -12,6 +12,7 @@ namespace CanidateApp.Server.Persistence
 
         public DbSet<TicketReason> TicketReasons { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<SiteAssignment> SiteAssignments { get; set; }
 
         /// <summary>
         /// Seed data on model creation.

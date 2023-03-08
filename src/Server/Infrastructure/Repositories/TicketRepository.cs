@@ -42,6 +42,21 @@ namespace CanidateApp.Server.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<Ticket>?> GetOpenTicketsByContractor(string contractor)
+        {
+            try
+            {
+                var sites = _dataContext.SiteAssignments.Where(s => s.Contractor == contractor).Select(s => s.SiteId);
+                var result = await _dataContext.Tickets.Where(t => t.TicketResolvedAt == null && sites.Contains(t.SiteId)).ToListAsync();
+
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> CreateTicket(Guid siteId, int reasonId, string? details)
         {
             try
