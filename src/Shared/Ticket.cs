@@ -21,7 +21,7 @@ namespace CanidateApp.Shared
         /// <summary>
         /// The reason describing the current issue with the tower.
         /// </summary>
-        public TicketReason Reason { get; set; } = null!;
+        public int ReasonId { get; set; } = 0;
 
         /// <summary>
         /// Details regarding the issue when the reason is not found in the list.

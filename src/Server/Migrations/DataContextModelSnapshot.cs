@@ -61,8 +61,6 @@ namespace CanidateApp.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReasonId");
-
                     b.ToTable("Tickets");
                 });
 
@@ -120,17 +118,6 @@ namespace CanidateApp.Server.Migrations
                             Reason = 6,
                             Title = "Other"
                         });
-                });
-
-            modelBuilder.Entity("CanidateApp.Shared.Ticket", b =>
-                {
-                    b.HasOne("CanidateApp.Shared.TicketReason", "Reason")
-                        .WithMany()
-                        .HasForeignKey("ReasonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reason");
                 });
 #pragma warning restore 612, 618
         }

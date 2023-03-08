@@ -1,8 +1,10 @@
 ﻿@page "/ticketManagement"
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Microsoft.AspNetCore.Authorization
+@using CanidateApp.Client.Components
 @using CanidateApp.Shared
 @inject HttpClient Http
+@inject NavigationManager navManager
 @inject AuthenticationStateProvider provider
 @attribute [Authorize]
 
@@ -11,7 +13,7 @@
 
 <h1>Ticket Management</h1>
 
-@if (tickets == null || roles == null)
+@if (ticketAssignments == null || tickets == null || roles == null || waiting == true)
 {
     <p><em>Loading...</em></p>
 }
@@ -21,30 +23,93 @@ else if (roles.Contains("client"))
     <table class="table">
         <thead>
         <tr>
-            <th>Site Id Client</th>
+            <th>Site Id</th>
             <th>Reason</th>
             <th>Details</th>
-            <th>Created on</th>
+            <th>Assigned To</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var ticket in tickets)
+        @foreach (var ticketAssignment in ticketAssignments)
         {
             <tr>
-                <td>@ticket.SiteId</td>
-                <td>@Enum.GetName(typeof(TicketReasonEnum), ticket.Reason.Id)</td>
-                @if (@ticket.Details != null)
+                <td>@ticketAssignment.SiteId</td>
+                <td>@Enum.GetName(typeof(TicketReasonEnum), ticketAssignment.ReasonId)</td>
+                @if (@ticketAssignment.Details != null)
                 {
-                    <td>@ticket.Details</td>
+                    <td>@ticketAssignment.Details</td>
                 }else
                 {
                     <td>No further details provided</td>
                 }
-                <td>@ticket.TicketCreatedAt.ToString()</td>
+                <td>@ticketAssignment.Status </td>
+                @if (ticketAssignment.Contractor != null)
+                {
+                    <td>
+                            <select selected="@ticketAssignments.First(a => a.TicketId == ticketAssignment.TicketId).Contractor" @onchange="e => ticketAssignments.First(a => a.TicketId == ticketAssignment.TicketId).Contractor = e.Value!.ToString()">
+                            @foreach (var c in contractors)
+                            {
+                                <option value="@c">@($"{c}")</option>
+                            }
+                        </select>
+                    </td>
+                }else
+                {
+                    <td>
+                        <select @onchange="e => ticketAssignments.First(a => a.TicketId == ticketAssignment.TicketId).Contractor = e.Value!.ToString()">
+                            <option value="">- No contractor set as of yet</option>
+                            @foreach (var c in contractors)
+                            {
+                                <option value="@c">@($"{c}")</option>
+                            }
+                        </select>
+                    </td>
+                }
+                @if (ticketAssignment.Status != TicketStatusEnum.Submitted)
+                {
+                    <td><button @onclick="() => UpdateAssignment(ticketAssignment.TicketId)" class="btn btn-submit">UpdateTicket</button></td>
+                }else
+                {
+                    <td><button @onclick="() => ResolveTicket(ticketAssignment.TicketId)" class="btn btn-submit">Resolve Ticket</button></td>
+                }
             </tr>
         }
         </tbody>
     </table>
+}
+else if (roles.Contains("contractor"))
+    {
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Site Id</th>
+                <th>Reason</th>
+                <th>Details</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ticketAssignment in ticketAssignments)
+            {
+                <tr>
+                    <td>@ticketAssignment.SiteId</td>
+                    <td>@Enum.GetName(typeof(TicketReasonEnum), ticketAssignment.ReasonId)</td>
+                    @if (@ticketAssignment.Details != null)
+                    {
+                        <td>@ticketAssignment.Details</td>
+                    }
+                    else
+                    {
+                        <td>No further details provided</td>
+                    }
+                    <td>@ticketAssignment.Status </td>
+                    <td><button disabled="@(ticketAssignment.Status == TicketStatusEnum.Submitted)" @onclick="() => SubmitTicket(ticketAssignment.TicketId)" class="btn btn-submit">Submit Ticket</button></td>
+                </tr>
+            }
+    </tbody>
+</table>
 }
 else if (roles.Contains("consumer"))
 {
@@ -52,7 +117,7 @@ else if (roles.Contains("consumer"))
     <table class="table">
         <thead>
             <tr>
-                <th>Site Id Consumer</th>
+                <th>Site Id</th>
                 <th>Reason</th>
                 <th>Details</th>
                 <th>Created on</th>
@@ -63,7 +128,7 @@ else if (roles.Contains("consumer"))
             {
                 <tr>
                     <td>@ticket.SiteId</td>
-                    <td>@ticket.Reason</td>
+                    <td>@ticket.ReasonId</td>
                     @if (@ticket.Details != null)
                     {
                         <td>@ticket.Details</td>
@@ -82,9 +147,43 @@ else if (roles.Contains("consumer"))
 
 @code {
     private Ticket[]? tickets;
+    private TicketAssignmentDto[]? ticketAssignments;
+    private List<string> contractors = new List<string>() { "Contractor1", "Contractor2" };
 
 
     private string roles = null!;
+    private string name = null!;
+
+    private bool waiting = false;
+
+    private async Task UpdateAssignment(int ticketId)
+    {
+        waiting = true;
+        var ticketAssignment = ticketAssignments!.First(t => t.TicketId == ticketId);
+        var result = await Http.PostAsJsonAsync<TicketAssignmentDto>($"{navManager.BaseUri}api/tickets/createAssignment", ticketAssignment);
+        ticketAssignments = await Http.GetFromJsonAsync<TicketAssignmentDto[]>("api/tickets/getTicketAssignments");
+        waiting = false;
+    }
+
+    private async Task ResolveTicket(int ticketId)
+    {
+        waiting = true;
+        var result = await Http.PostAsJsonAsync<int>($"{navManager.BaseUri}api/tickets/resolveTicket", ticketId);
+        ticketAssignments = await Http.GetFromJsonAsync<TicketAssignmentDto[]>("api/tickets/getTicketAssignments");
+        waiting = false;
+    }
+
+    private async Task SubmitTicket(int ticketId)
+    {
+        waiting = true;
+        var result = await Http.PostAsJsonAsync<int>($"{navManager.BaseUri}api/tickets/submitTicket", ticketId);
+        ticketAssignments = await Http.GetFromJsonAsync<TicketAssignmentDto[]>("api/tickets/getTicketAssignments");
+        if (roles.Contains("contractor"))
+        {
+            ticketAssignments = ticketAssignments!.Where(t => t.Contractor != null && name.Contains(t.Contractor.ToLower())).ToArray();
+        }
+        waiting = false;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,8 +196,17 @@ else if (roles.Contains("consumer"))
                 {
                     roles = claim.Value.ToLower();
                 }
+                if (claim.Type.ToLower().Contains("name"))
+                {
+                    name = claim.Value.ToLower();
+                }
             }
             tickets = await Http.GetFromJsonAsync<Ticket[]>("api/tickets/getTickets");
+            ticketAssignments = await Http.GetFromJsonAsync<TicketAssignmentDto[]>("api/tickets/getTicketAssignments");
+            if (roles.Contains("contractor"))
+            {
+                ticketAssignments = ticketAssignments!.Where(t => t.Contractor != null && name.Contains(t.Contractor.ToLower())).ToArray();
+            }
         }
         catch (AccessTokenNotAvailableException exception)
         {
@@ -110,3 +218,28 @@ else if (roles.Contains("consumer"))
         }
     }
 }
+
+<style>
+
+    .btn {
+        margin: 1rem 0;
+        margin-right: auto;
+    }
+
+    .btn-submit {
+        background-color: forestgreen;
+        color: whitesmoke;
+    }
+
+    select {
+        margin-top: 1rem;
+        border-radius: 8px;
+        background-color: transparent;
+        box-shadow: 1px 1px 1px rgba(50, 50, 50, 0.3), -1px -1px 1px rgba(50, 50, 50, 0.3);
+        padding-left: 0.6rem;
+    }
+
+    option {
+        padding: 0.3rem;
+    }
+</style>

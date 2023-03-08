@@ -38,7 +38,7 @@ else
             }
         </select>
 
-        @if (ticket.ReasonId == (int)TicketReasonEnum.Other) // Only display if the reson is "Other."
+        @if (ticket.ReasonId == (int)TicketReasonEnum.Other) // Only display if the reson is "Other".
         {
             <textarea class="details-area" @bind="ticket.Details" />
         }

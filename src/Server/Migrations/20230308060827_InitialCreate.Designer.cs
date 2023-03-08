@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CanidateApp.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230307203637_InitialCreate")]
+    [Migration("20230308060827_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -19,6 +19,24 @@ namespace CanidateApp.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.3");
+
+            modelBuilder.Entity("CanidateApp.Shared.SiteAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Contractor")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("SiteId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SiteAssignments");
+                });
 
             modelBuilder.Entity("CanidateApp.Shared.Ticket", b =>
                 {
@@ -46,8 +64,6 @@ namespace CanidateApp.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReasonId");
-
                     b.ToTable("Tickets");
                 });
 
@@ -72,50 +88,39 @@ namespace CanidateApp.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Reason = 0,
+                            Reason = 1,
                             Title = "Tower connection is failing"
                         },
                         new
                         {
                             Id = 2,
-                            Reason = 1,
+                            Reason = 2,
                             Title = "Tower has trouble lasting through 4-hour loadshedding"
                         },
                         new
                         {
                             Id = 3,
-                            Reason = 2,
+                            Reason = 3,
                             Title = "Tower has trouble lasting through 2-hour loadshedding"
                         },
                         new
                         {
                             Id = 4,
-                            Reason = 3,
+                            Reason = 4,
                             Title = "Tower connection is slow"
                         },
                         new
                         {
                             Id = 5,
-                            Reason = 4,
+                            Reason = 5,
                             Title = "Tower connection is unstable"
                         },
                         new
                         {
                             Id = 6,
-                            Reason = 5,
+                            Reason = 6,
                             Title = "Other"
                         });
-                });
-
-            modelBuilder.Entity("CanidateApp.Shared.Ticket", b =>
-                {
-                    b.HasOne("CanidateApp.Shared.TicketReason", "Reason")
-                        .WithMany()
-                        .HasForeignKey("ReasonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reason");
                 });
 #pragma warning restore 612, 618
         }

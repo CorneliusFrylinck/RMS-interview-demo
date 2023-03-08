@@ -14,6 +14,20 @@ namespace CanidateApp.Server.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "SiteAssignments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    SiteId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Contractor = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SiteAssignments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TicketReasons",
                 columns: table => new
                 {
@@ -43,12 +57,6 @@ namespace CanidateApp.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tickets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tickets_TicketReasons_ReasonId",
-                        column: x => x.ReasonId,
-                        principalTable: "TicketReasons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -56,28 +64,26 @@ namespace CanidateApp.Server.Migrations
                 columns: new[] { "Id", "Reason", "Title" },
                 values: new object[,]
                 {
-                    { 1, 0, "Tower connection is failing" },
-                    { 2, 1, "Tower has trouble lasting through 4-hour loadshedding" },
-                    { 3, 2, "Tower has trouble lasting through 2-hour loadshedding" },
-                    { 4, 3, "Tower connection is slow" },
-                    { 5, 4, "Tower connection is unstable" },
-                    { 6, 5, "Other" }
+                    { 1, 1, "Tower connection is failing" },
+                    { 2, 2, "Tower has trouble lasting through 4-hour loadshedding" },
+                    { 3, 3, "Tower has trouble lasting through 2-hour loadshedding" },
+                    { 4, 4, "Tower connection is slow" },
+                    { 5, 5, "Tower connection is unstable" },
+                    { 6, 6, "Other" }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tickets_ReasonId",
-                table: "Tickets",
-                column: "ReasonId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Tickets");
+                name: "SiteAssignments");
 
             migrationBuilder.DropTable(
                 name: "TicketReasons");
+
+            migrationBuilder.DropTable(
+                name: "Tickets");
         }
     }
 }

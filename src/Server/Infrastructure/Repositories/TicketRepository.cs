@@ -61,11 +61,10 @@ namespace CanidateApp.Server.Infrastructure.Repositories
         {
             try
             {
-                var reason = await _dataContext.TicketReasons.Where(r => r.Id == reasonId).FirstAsync();
                 var ticket = new Ticket
                 {
                     SiteId = siteId,
-                    Reason = reason,
+                    ReasonId = reasonId,
                     Details = details
                 };
                 await _dataContext.Tickets.AddAsync(ticket);
@@ -90,6 +89,69 @@ namespace CanidateApp.Server.Infrastructure.Repositories
             catch
             {
                 return null;
+            }
+        }
+
+        public async Task<IEnumerable<SiteAssignment>?> GetSiteAssignments()
+        {
+            try
+            {
+                var result = await _dataContext.SiteAssignments.ToListAsync();
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> AssignTickets(TicketAssignmentDto ticketAssignmentDto)
+        {
+            try
+            {
+                var siteAssignment = new SiteAssignment
+                {
+                    SiteId = ticketAssignmentDto.SiteId,
+                    Contractor = ticketAssignmentDto.Contractor!
+                };
+                await _dataContext.SiteAssignments.AddAsync(siteAssignment);
+
+                var siteTickets = await _dataContext.Tickets.Where(t => t.SiteId ==  ticketAssignmentDto.SiteId && ticketAssignmentDto.Status == TicketStatusEnum.Unassigned).ToListAsync();
+
+                foreach (var ticket in siteTickets)
+                {
+                    ticket.Status = TicketStatusEnum.Assigned;
+                }
+
+                var changes = await _dataContext.SaveChangesAsync();
+
+                return changes > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateTicketStatus(int ticketId, TicketStatusEnum newStatus)
+        {
+            try
+            {
+                var ticket = await _dataContext.Tickets.FirstAsync(t => t.Id == ticketId);
+                ticket!.Status = newStatus;
+
+                if (newStatus == TicketStatusEnum.Resolved)
+                {
+                    ticket!.TicketResolvedAt = DateTime.UtcNow;
+                }
+
+                var changes = await _dataContext.SaveChangesAsync();
+
+                return changes > 0;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

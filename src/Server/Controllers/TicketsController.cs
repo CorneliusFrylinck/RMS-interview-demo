@@ -38,12 +38,71 @@ namespace CanidateApp.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("getTicketAssignments")]
+        public async Task<ActionResult<IEnumerable<TicketAssignmentDto>>> GetTicketAssignments()
+        {
+            List<TicketAssignmentDto> ticketAssignmentDtos = new List<TicketAssignmentDto>();
+
+            var tickets = await _ticketRepository.GetOpenTickets();
+            if (tickets == null) return BadRequest("We had a problem getting tickets.");
+
+            var assignments = await _ticketRepository.GetSiteAssignments();
+            if (assignments == null) return BadRequest("We had a problem getting assignments.");
+
+            foreach (var ticket in tickets)
+            {
+                var assignment = assignments.FirstOrDefault(a => a.SiteId == ticket.SiteId);
+                var contractor = assignment == null ? null : assignment.Contractor;
+                ticketAssignmentDtos.Add(new TicketAssignmentDto
+                {
+                    TicketId = ticket.Id,
+                    Details = ticket.Details,
+                    ReasonId = ticket.ReasonId,
+                    SiteId = ticket.SiteId,
+                    Status = ticket.Status,
+                    Contractor = contractor
+                });
+            }
+
+            return Ok(ticketAssignmentDtos);
+        }
+
         [HttpPost("createTicket")]
-        public async Task<ActionResult> CreateTicketAsynx([FromBody] TicketDto ticketDto)
+        public async Task<ActionResult> CreateTicketAsync([FromBody] TicketDto ticketDto)
         {
             var result = await _ticketRepository.CreateTicket(ticketDto.SiteId, ticketDto.ReasonId, ticketDto.Details);
 
             if (!result) return BadRequest("We were unable to create your ticket.");
+
+            return Ok();
+        }
+
+        [HttpPost("createAssignment")]
+        public async Task<ActionResult> CreateAssignmentAsync([FromBody] TicketAssignmentDto ticketAssignmentDto)
+        {
+            var result = await _ticketRepository.AssignTickets(ticketAssignmentDto);
+
+            if (!result) return BadRequest("We were unable to assign tickets.");
+
+            return Ok();
+        }
+
+        [HttpPost("submitTicket")]
+        public async Task<ActionResult> SubmitTicketAsync([FromBody] int ticketId)
+        {
+            var result = await _ticketRepository.UpdateTicketStatus(ticketId, TicketStatusEnum.Submitted);
+
+            if (!result) return BadRequest("We were unable to update your ticket.");
+
+            return Ok();
+        }
+
+        [HttpPost("resolveTicket")]
+        public async Task<ActionResult> ResolveTicketAsync([FromBody] int ticketId)
+        {
+            var result = await _ticketRepository.UpdateTicketStatus(ticketId, TicketStatusEnum.Resolved);
+
+            if (!result) return BadRequest("We were unable to update your ticket.");
 
             return Ok();
         }
